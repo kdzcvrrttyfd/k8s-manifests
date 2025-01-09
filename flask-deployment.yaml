@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+  labels:
+    app: flask-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+      - name: flask-app
+        image: qudwndh/shop:2.3
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DATABASE_URI
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: database_uri
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: secret_key
+        - name: GCS_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: GCS_BUCKET_NAME
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/etc/secrets/google-credentials.json"
+        volumeMounts:
+        - name: google-credentials
+          mountPath: "/etc/secrets"
+          readOnly: true
+        resources:
+          requests:
+            memory: "250Mi"
+            cpu: "210m"
+          limits:
+            memory: "280Mi"
+            cpu: "220m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+            httpHeaders:
+            - name: Host
+              value: "localhost"
+          initialDelaySeconds: 300  # 초기화 지연 시간을 늘림
+          periodSeconds: 10         # 프로브 주기
+          timeoutSeconds: 1         # 타임아웃 시간 증가
+          failureThreshold: 5       # 실패 임계값 증가
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+            httpHeaders:
+            - name: Host
+              value: "localhost"
+          initialDelaySeconds: 300  # 초기화 지연 시간을 늘림
+          periodSeconds: 10         # 프로브 주기
+          timeoutSeconds: 1         # 타임아웃 시간 증가
+          failureThreshold: 5       # 실패 임계값 증가
+      volumes:
+      - name: google-credentials
+        secret:
+          secretName: google-credentials
+      dnsPolicy: "ClusterFirst"
+      dnsConfig:
+        options:
+        - name: ndots
+          value: "2"
+
