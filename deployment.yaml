@@ -7,11 +7,6 @@ metadata:
     app: flask-app
 spec:
   replicas: 3
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1  # 배포 시 최대 불가 상태인 파드 수
-      maxSurge: 1        # 배포 시 최대 생성할 수 있는 파드 수
   selector:
     matchLabels:
       app: flask-app
