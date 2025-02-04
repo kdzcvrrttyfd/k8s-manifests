@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: flask-app
-          image: rlaekdh12345/docker:3
+          image: rlaekdh12345/docker:1
           ports:
             - containerPort: 5000       # 애플리케이션 포트
           env:
