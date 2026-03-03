@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: flask-app
-          image: rlaekdh12345/rlagoddn:9 # 젠킨스가 이 숫자를 자동으로 바꿀 겁니다.
+          image: rlaekdh12345/rlagoddn:10
           ports:
             - containerPort: 5000
           env:
